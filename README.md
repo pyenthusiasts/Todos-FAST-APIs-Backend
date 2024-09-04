@@ -1,6 +1,6 @@
 # Todo Application Backend with FastAPI
 
-This project demonstrates a backend REST API for a **Todo Application** built using **FastAPI**, a modern and fast web framework for building APIs with Python. The API supports basic CRUD operations (Create, Read, Update, Delete) to manage a list of todo items.
+This project demonstrates a simple, demo backend REST API for a **Todo Application** built using **FastAPI**, a modern and fast web framework for building APIs with Python. The API supports basic CRUD operations (Create, Read, Update, Delete) to manage a list of todo items.
 
 ## Table of Contents
 
