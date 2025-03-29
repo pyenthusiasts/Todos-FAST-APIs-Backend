@@ -10,7 +10,7 @@ todos = []
 
 # Pydantic model for Todo
 class Todo(BaseModel):
-    id: int
+    id: int 
     title: str
     description: Optional[str] = None
     completed: bool = False
