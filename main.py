@@ -1,6 +1,7 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException, Query
+from pydantic import BaseModel, Field
 from typing import List, Optional
+from datetime import datetime
 
 # FastAPI instance
 app = FastAPI()
@@ -14,6 +15,8 @@ class Todo(BaseModel):
     title: str
     description: Optional[str] = None
     completed: bool = False
+    priority: Optional[str] = Field(default="medium", pattern="^(low|medium|high)$")
+    due_date: Optional[datetime] = None
 
 # Helper function to find a todo by id
 def find_todo(todo_id: int):
@@ -29,8 +32,29 @@ def read_root():
 
 # Get all todos
 @app.get("/todos", response_model=List[Todo])
-def get_todos():
-    return todos
+def get_todos(
+    completed: Optional[bool] = None,
+    priority: Optional[str] = Query(None, pattern="^(low|medium|high)$"),
+    before: Optional[datetime] = None,
+    after: Optional[datetime] = None,
+    sort: Optional[str] = Query(None, pattern="^(due_date|priority)$")
+):
+    filtered = todos
+    if completed is not None:
+        filtered = [t for t in filtered if t.completed == completed]
+    if priority:
+        filtered = [t for t in filtered if t.priority == priority]
+    if before:
+        filtered = [t for t in filtered if t.due_date and t.due_date <= before]
+    if after:
+        filtered = [t for t in filtered if t.due_date and t.due_date >= after]
+    if sort:
+        if sort == "due_date":
+            filtered = sorted(filtered, key=lambda t: t.due_date if t.due_date else datetime.max)
+        elif sort == "priority":
+            priority_order = {"high": 0, "medium": 1, "low": 2}
+            filtered = sorted(filtered, key=lambda t: priority_order.get(t.priority or "medium", 1))
+    return filtered
 
 # Get a todo by ID
 @app.get("/todos/{todo_id}", response_model=Todo)
@@ -57,6 +81,8 @@ def update_todo(todo_id: int, updated_todo: Todo):
     todo.title = updated_todo.title
     todo.description = updated_todo.description
     todo.completed = updated_todo.completed
+    todo.priority = updated_todo.priority
+    todo.due_date = updated_todo.due_date
     return todo
 
 # Delete a todo

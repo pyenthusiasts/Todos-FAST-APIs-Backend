@@ -21,6 +21,9 @@ This Todo Application provides a RESTful API that allows users to manage their t
 
 - **FastAPI Framework**: Built using FastAPI, which provides asynchronous support and high performance.
 - **CRUD Operations**: Create, Read, Update, and Delete operations for managing todo items.
+- **Priority Levels**: Assign priority levels (low, medium, high) to todos for better task organization.
+- **Due Dates**: Set deadlines for todos with ISO 8601 timestamp support.
+- **Filtering & Sorting**: Filter todos by completion status, priority, date range, and sort by priority or due date.
 - **Automatic API Documentation**: Interactive API documentation generated with **Swagger UI** and **ReDoc**.
 - **Pydantic Models**: Data validation and serialization using Pydantic models.
 - **Error Handling**: Custom error messages for different HTTP status codes.
@@ -83,8 +86,14 @@ The following endpoints are available:
 ### 1. Get All Todos
 
 - **Endpoint**: `GET /todos`
-- **Description**: Retrieve all todo items.
-- **Response**: A list of all todo items.
+- **Description**: Retrieve all todo items with optional filtering and sorting.
+- **Query Parameters**:
+  - `completed` (optional): Filter by completion status (true/false)
+  - `priority` (optional): Filter by priority level (low/medium/high)
+  - `before` (optional): Filter todos due before a specific date (ISO 8601 format)
+  - `after` (optional): Filter todos due after a specific date (ISO 8601 format)
+  - `sort` (optional): Sort results by `due_date` or `priority`
+- **Response**: A list of todo items matching the filters.
 
 ### 2. Get Todo by ID
 
@@ -102,9 +111,13 @@ The following endpoints are available:
     "id": 1,
     "title": "Buy groceries",
     "description": "Milk, Bread, Cheese, Eggs",
-    "completed": false
+    "completed": false,
+    "priority": "medium",
+    "due_date": "2025-10-10T12:00:00"
   }
   ```
+  - `priority` (optional): Priority level - "low", "medium" (default), or "high"
+  - `due_date` (optional): Due date in ISO 8601 format (YYYY-MM-DDTHH:MM:SS)
 - **Response**: The newly created todo item.
 
 ### 4. Update an Existing Todo
@@ -117,7 +130,9 @@ The following endpoints are available:
     "id": 1,
     "title": "Buy groceries and fruits",
     "description": "Milk, Bread, Cheese, Eggs, Apples",
-    "completed": false
+    "completed": false,
+    "priority": "high",
+    "due_date": "2025-10-08T17:00:00"
   }
   ```
 - **Response**: The updated todo item.
@@ -135,7 +150,7 @@ The following endpoints are available:
 1. **Create a Todo**:
 
    ```bash
-   curl -X POST -H "Content-Type: application/json" -d '{"id": 1, "title": "Buy groceries", "description": "Milk, Bread, Cheese, Eggs", "completed": false}' http://127.0.0.1:8000/todos
+   curl -X POST -H "Content-Type: application/json" -d '{"id": 1, "title": "Buy groceries", "description": "Milk, Bread, Cheese, Eggs", "completed": false, "priority": "medium", "due_date": "2025-10-10T12:00:00"}' http://127.0.0.1:8000/todos
    ```
 
 2. **Get All Todos**:
@@ -150,13 +165,43 @@ The following endpoints are available:
    curl -X GET http://127.0.0.1:8000/todos/1
    ```
 
-4. **Update a Todo**:
+4. **Filter Todos by Priority**:
 
    ```bash
-   curl -X PUT -H "Content-Type: application/json" -d '{"id": 1, "title": "Buy groceries and fruits", "description": "Milk, Bread, Cheese, Eggs, Apples", "completed": false}' http://127.0.0.1:8000/todos/1
+   curl -X GET 'http://127.0.0.1:8000/todos?priority=high'
    ```
 
-5. **Delete a Todo**:
+5. **Filter Todos by Completion Status**:
+
+   ```bash
+   curl -X GET 'http://127.0.0.1:8000/todos?completed=true'
+   ```
+
+6. **Filter Todos by Date Range**:
+
+   ```bash
+   curl -X GET 'http://127.0.0.1:8000/todos?before=2025-10-15T00:00:00'
+   ```
+
+7. **Sort Todos by Due Date**:
+
+   ```bash
+   curl -X GET 'http://127.0.0.1:8000/todos?sort=due_date'
+   ```
+
+8. **Combined Filters and Sorting**:
+
+   ```bash
+   curl -X GET 'http://127.0.0.1:8000/todos?priority=high&before=2025-10-15T00:00:00&sort=due_date'
+   ```
+
+9. **Update a Todo**:
+
+   ```bash
+   curl -X PUT -H "Content-Type: application/json" -d '{"id": 1, "title": "Buy groceries and fruits", "description": "Milk, Bread, Cheese, Eggs, Apples", "completed": false, "priority": "high", "due_date": "2025-10-08T17:00:00"}' http://127.0.0.1:8000/todos/1
+   ```
+
+10. **Delete a Todo**:
 
    ```bash
    curl -X DELETE http://127.0.0.1:8000/todos/1
