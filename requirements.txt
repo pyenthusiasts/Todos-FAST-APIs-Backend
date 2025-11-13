@@ -30,3 +30,6 @@ python-json-logger==2.0.7
 
 # CORS
 python-dotenv==1.0.0
+
+# System monitoring
+psutil==5.9.7
