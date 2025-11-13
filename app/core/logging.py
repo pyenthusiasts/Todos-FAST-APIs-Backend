@@ -1,0 +1,43 @@
+"""Logging configuration for the application."""
+import logging
+import sys
+from pythonjsonlogger import jsonlogger
+from app.core.config import settings
+
+
+def setup_logging():
+    """Configure application logging."""
+
+    # Create logger
+    logger = logging.getLogger()
+    logger.setLevel(getattr(logging, settings.LOG_LEVEL))
+
+    # Clear existing handlers
+    logger.handlers.clear()
+
+    # Create console handler
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(getattr(logging, settings.LOG_LEVEL))
+
+    # Create formatter
+    if settings.DEBUG:
+        # Human-readable format for development
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+    else:
+        # JSON format for production
+        formatter = jsonlogger.JsonFormatter(
+            '%(asctime)s %(name)s %(levelname)s %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+
+    return logger
+
+
+# Initialize logger
+logger = setup_logging()

@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: todo-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./todos.db
+      - DEBUG=True
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./app:/app/app
+      - todo-data:/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Optional: PostgreSQL database
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: todo-postgres
+  #   environment:
+  #     POSTGRES_DB: tododb
+  #     POSTGRES_USER: todouser
+  #     POSTGRES_PASSWORD: todopass
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+
+volumes:
+  todo-data:
+  # postgres-data:
