@@ -1,6 +1,9 @@
 """Service layer for Todo operations."""
-from sqlalchemy.orm import Session
+
 from typing import List, Optional
+
+from sqlalchemy.orm import Session
+
 from app.models.todo import Todo
 from app.schemas.todo import TodoCreate, TodoUpdate
 
@@ -49,11 +52,7 @@ class TodoService:
         Returns:
             Created Todo object
         """
-        db_todo = Todo(
-            title=todo.title,
-            description=todo.description,
-            completed=todo.completed
-        )
+        db_todo = Todo(title=todo.title, description=todo.description, completed=todo.completed)
         db.add(db_todo)
         db.commit()
         db.refresh(db_todo)
@@ -131,7 +130,7 @@ class TodoService:
         Returns:
             List of completed Todo objects
         """
-        return db.query(Todo).filter(Todo.completed == True).offset(skip).limit(limit).all()
+        return db.query(Todo).filter(Todo.completed.is_(True)).offset(skip).limit(limit).all()
 
     @staticmethod
     def get_pending_todos(db: Session, skip: int = 0, limit: int = 100) -> List[Todo]:
@@ -146,4 +145,4 @@ class TodoService:
         Returns:
             List of pending Todo objects
         """
-        return db.query(Todo).filter(Todo.completed == False).offset(skip).limit(limit).all()
+        return db.query(Todo).filter(Todo.completed.is_(False)).offset(skip).limit(limit).all()

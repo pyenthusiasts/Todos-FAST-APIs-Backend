@@ -1,4 +1,5 @@
 """Rate limiting middleware."""
+
 import time
 from collections import defaultdict
 from typing import Dict, Tuple
@@ -62,8 +63,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
         # Clean old requests
         self.requests[client_ip] = [
-            req_time for req_time in self.requests[client_ip]
-            if req_time > minute_ago
+            req_time for req_time in self.requests[client_ip] if req_time > minute_ago
         ]
 
         # Check if rate limited
@@ -110,7 +110,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                     "X-RateLimit-Limit": str(self.requests_per_minute),
                     "X-RateLimit-Remaining": "0",
                     "Retry-After": "60",
-                }
+                },
             )
 
         # Process request

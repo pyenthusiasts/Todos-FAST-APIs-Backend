@@ -1,17 +1,15 @@
 """Exception handlers for the application."""
+
 from fastapi import Request, status
-from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.exceptions import TodoAPIException
 from app.core.logging import logger
 
 
-async def todo_api_exception_handler(
-    request: Request,
-    exc: TodoAPIException
-) -> JSONResponse:
+async def todo_api_exception_handler(request: Request, exc: TodoAPIException) -> JSONResponse:
     """
     Handle custom TodoAPIException.
 
@@ -28,23 +26,18 @@ async def todo_api_exception_handler(
             "path": request.url.path,
             "method": request.method,
             "status_code": exc.status_code,
-            "details": exc.details
-        }
+            "details": exc.details,
+        },
     )
 
     return JSONResponse(
         status_code=exc.status_code,
-        content={
-            "error": exc.message,
-            "details": exc.details,
-            "path": request.url.path
-        }
+        content={"error": exc.message, "details": exc.details, "path": request.url.path},
     )
 
 
 async def validation_exception_handler(
-    request: Request,
-    exc: RequestValidationError
+    request: Request, exc: RequestValidationError
 ) -> JSONResponse:
     """
     Handle Pydantic validation errors.
@@ -58,27 +51,16 @@ async def validation_exception_handler(
     """
     logger.warning(
         f"Validation error: {exc.errors()}",
-        extra={
-            "path": request.url.path,
-            "method": request.method,
-            "errors": exc.errors()
-        }
+        extra={"path": request.url.path, "method": request.method, "errors": exc.errors()},
     )
 
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content={
-            "error": "Validation error",
-            "details": exc.errors(),
-            "path": request.url.path
-        }
+        content={"error": "Validation error", "details": exc.errors(), "path": request.url.path},
     )
 
 
-async def sqlalchemy_exception_handler(
-    request: Request,
-    exc: SQLAlchemyError
-) -> JSONResponse:
+async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError) -> JSONResponse:
     """
     Handle SQLAlchemy database errors.
 
@@ -91,26 +73,16 @@ async def sqlalchemy_exception_handler(
     """
     logger.error(
         f"Database error: {str(exc)}",
-        extra={
-            "path": request.url.path,
-            "method": request.method,
-            "error": str(exc)
-        }
+        extra={"path": request.url.path, "method": request.method, "error": str(exc)},
     )
 
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={
-            "error": "Database error occurred",
-            "path": request.url.path
-        }
+        content={"error": "Database error occurred", "path": request.url.path},
     )
 
 
-async def generic_exception_handler(
-    request: Request,
-    exc: Exception
-) -> JSONResponse:
+async def generic_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """
     Handle any unhandled exceptions.
 
@@ -127,15 +99,12 @@ async def generic_exception_handler(
             "path": request.url.path,
             "method": request.method,
             "error": str(exc),
-            "type": type(exc).__name__
+            "type": type(exc).__name__,
         },
-        exc_info=True
+        exc_info=True,
     )
 
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={
-            "error": "Internal server error",
-            "path": request.url.path
-        }
+        content={"error": "Internal server error", "path": request.url.path},
     )

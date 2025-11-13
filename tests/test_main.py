@@ -1,4 +1,5 @@
 """Tests for main application endpoints."""
+
 from fastapi import status
 
 

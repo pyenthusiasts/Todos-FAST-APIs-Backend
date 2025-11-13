@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Database backup utility script."""
 import os
-import sys
 import shutil
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -59,9 +59,7 @@ def cleanup_old_backups(backup_dir: Path, keep: int = 10):
         keep: Number of backups to keep
     """
     backups = sorted(
-        backup_dir.glob("todos_backup_*.db"),
-        key=lambda x: x.stat().st_mtime,
-        reverse=True
+        backup_dir.glob("todos_backup_*.db"), key=lambda x: x.stat().st_mtime, reverse=True
     )
 
     if len(backups) > keep:
@@ -117,9 +115,7 @@ def list_backups():
         return
 
     backups = sorted(
-        backup_dir.glob("todos_backup_*.db"),
-        key=lambda x: x.stat().st_mtime,
-        reverse=True
+        backup_dir.glob("todos_backup_*.db"), key=lambda x: x.stat().st_mtime, reverse=True
     )
 
     if not backups:
@@ -141,15 +137,8 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Database backup utility")
-    parser.add_argument(
-        "action",
-        choices=["backup", "restore", "list"],
-        help="Action to perform"
-    )
-    parser.add_argument(
-        "--file",
-        help="Backup file path (for restore action)"
-    )
+    parser.add_argument("action", choices=["backup", "restore", "list"], help="Action to perform")
+    parser.add_argument("--file", help="Backup file path (for restore action)")
 
     args = parser.parse_args()
 

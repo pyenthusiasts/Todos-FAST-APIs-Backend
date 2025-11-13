@@ -1,31 +1,33 @@
 """Main FastAPI application."""
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.exceptions import RequestValidationError
-from sqlalchemy.exc import SQLAlchemyError
+
 from contextlib import asynccontextmanager
 
-from app.core.config import settings
-from app.core.logging import logger
-from app.db.database import init_db
-from app.api.todos import router as todos_router
-from app.api.health import router as health_router
+from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.exc import SQLAlchemyError
 
-# Import middleware
-from app.middleware import (
-    RequestIDMiddleware,
-    SecurityHeadersMiddleware,
-    LoggingMiddleware,
-    RateLimitMiddleware,
+from app.api.health import router as health_router
+from app.api.todos import router as todos_router
+from app.core.config import settings
+from app.core.exception_handlers import (
+    generic_exception_handler,
+    sqlalchemy_exception_handler,
+    todo_api_exception_handler,
+    validation_exception_handler,
 )
 
 # Import exception handlers
 from app.core.exceptions import TodoAPIException
-from app.core.exception_handlers import (
-    todo_api_exception_handler,
-    validation_exception_handler,
-    sqlalchemy_exception_handler,
-    generic_exception_handler,
+from app.core.logging import logger
+from app.db.database import init_db
+
+# Import middleware
+from app.middleware import (
+    LoggingMiddleware,
+    RateLimitMiddleware,
+    RequestIDMiddleware,
+    SecurityHeadersMiddleware,
 )
 
 
@@ -60,18 +62,9 @@ app = FastAPI(
     redoc_url=f"{settings.API_V1_PREFIX}/redoc",
     openapi_url=f"{settings.API_V1_PREFIX}/openapi.json",
     openapi_tags=[
-        {
-            "name": "root",
-            "description": "Root endpoints for API information"
-        },
-        {
-            "name": "health",
-            "description": "Health check and monitoring endpoints"
-        },
-        {
-            "name": "todos",
-            "description": "Todo CRUD operations"
-        },
+        {"name": "root", "description": "Root endpoints for API information"},
+        {"name": "health", "description": "Health check and monitoring endpoints"},
+        {"name": "todos", "description": "Todo CRUD operations"},
     ],
 )
 
@@ -130,10 +123,6 @@ app.include_router(todos_router, prefix=settings.API_V1_PREFIX)
 
 if __name__ == "__main__":
     import uvicorn
+
     logger.info(f"Starting server on {settings.HOST}:{settings.PORT}")
-    uvicorn.run(
-        "app.main:app",
-        host=settings.HOST,
-        port=settings.PORT,
-        reload=settings.DEBUG
-    )
+    uvicorn.run("app.main:app", host=settings.HOST, port=settings.PORT, reload=settings.DEBUG)

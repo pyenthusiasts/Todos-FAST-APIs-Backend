@@ -1,13 +1,15 @@
 """Health check endpoints."""
-from fastapi import APIRouter, Depends, status
-from sqlalchemy.orm import Session
-from sqlalchemy import text
-import psutil
+
 import platform
 from datetime import datetime
 
-from app.db.database import get_db
+import psutil
+from fastapi import APIRouter, Depends
+from sqlalchemy import text
+from sqlalchemy.orm import Session
+
 from app.core.config import settings
+from app.db.database import get_db
 
 router = APIRouter(prefix="/health", tags=["health"])
 
@@ -23,7 +25,7 @@ def health_check():
     return {
         "status": "healthy",
         "timestamp": datetime.utcnow().isoformat(),
-        "version": settings.VERSION
+        "version": settings.VERSION,
     }
 
 
@@ -43,7 +45,7 @@ def detailed_health_check(db: Session = Depends(get_db)):
         "timestamp": datetime.utcnow().isoformat(),
         "version": settings.VERSION,
         "environment": "development" if settings.DEBUG else "production",
-        "checks": {}
+        "checks": {},
     }
 
     # Database connectivity check
@@ -51,13 +53,13 @@ def detailed_health_check(db: Session = Depends(get_db)):
         db.execute(text("SELECT 1"))
         health_status["checks"]["database"] = {
             "status": "healthy",
-            "message": "Database connection successful"
+            "message": "Database connection successful",
         }
     except Exception as e:
         health_status["status"] = "unhealthy"
         health_status["checks"]["database"] = {
             "status": "unhealthy",
-            "message": f"Database connection failed: {str(e)}"
+            "message": f"Database connection failed: {str(e)}",
         }
 
     # System metrics
@@ -72,8 +74,8 @@ def detailed_health_check(db: Session = Depends(get_db)):
                 "memory_usage_percent": memory.percent,
                 "memory_available_mb": memory.available / (1024 * 1024),
                 "platform": platform.platform(),
-                "python_version": platform.python_version()
-            }
+                "python_version": platform.python_version(),
+            },
         }
 
         # Warn if resources are low
@@ -83,7 +85,7 @@ def detailed_health_check(db: Session = Depends(get_db)):
     except Exception as e:
         health_status["checks"]["system"] = {
             "status": "unknown",
-            "message": f"Could not retrieve system metrics: {str(e)}"
+            "message": f"Could not retrieve system metrics: {str(e)}",
         }
 
     return health_status
@@ -104,16 +106,9 @@ def readiness_check(db: Session = Depends(get_db)):
         # Check database connectivity
         db.execute(text("SELECT 1"))
 
-        return {
-            "status": "ready",
-            "timestamp": datetime.utcnow().isoformat()
-        }
+        return {"status": "ready", "timestamp": datetime.utcnow().isoformat()}
     except Exception as e:
-        return {
-            "status": "not_ready",
-            "reason": str(e),
-            "timestamp": datetime.utcnow().isoformat()
-        }
+        return {"status": "not_ready", "reason": str(e), "timestamp": datetime.utcnow().isoformat()}
 
 
 @router.get("/live", summary="Liveness probe")
@@ -124,7 +119,4 @@ def liveness_check():
     Returns:
         Liveness status
     """
-    return {
-        "status": "alive",
-        "timestamp": datetime.utcnow().isoformat()
-    }
+    return {"status": "alive", "timestamp": datetime.utcnow().isoformat()}

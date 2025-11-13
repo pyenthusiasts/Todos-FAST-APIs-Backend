@@ -1,9 +1,12 @@
 """Alembic environment configuration."""
-from logging.config import fileConfig
-from sqlalchemy import engine_from_config, pool
-from alembic import context
+
 import sys
+from logging.config import fileConfig
 from pathlib import Path
+
+from sqlalchemy import engine_from_config, pool
+
+from alembic import context
 
 # Add the parent directory to the path
 sys.path.append(str(Path(__file__).resolve().parents[1]))

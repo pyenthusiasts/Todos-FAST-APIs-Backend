@@ -6,9 +6,9 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
+from app.core.logging import logger
 from app.db.database import SessionLocal
 from app.models.todo import Todo
-from app.core.logging import logger
 
 
 def seed_todos():
@@ -23,7 +23,7 @@ def seed_todos():
             logger.info(f"Database already contains {existing_count} todos")
             print(f"\nDatabase already contains {existing_count} todos")
             response = input("Do you want to add more sample data? (y/n): ")
-            if response.lower() != 'y':
+            if response.lower() != "y":
                 print("Skipping seed operation")
                 return
 
@@ -32,42 +32,42 @@ def seed_todos():
             {
                 "title": "Set up development environment",
                 "description": "Install Python, FastAPI, and configure IDE",
-                "completed": True
+                "completed": True,
             },
             {
                 "title": "Design database schema",
                 "description": "Create ERD and define table relationships",
-                "completed": True
+                "completed": True,
             },
             {
                 "title": "Implement CRUD operations",
                 "description": "Create endpoints for Create, Read, Update, Delete",
-                "completed": True
+                "completed": True,
             },
             {
                 "title": "Write unit tests",
                 "description": "Add comprehensive test coverage for all endpoints",
-                "completed": False
+                "completed": False,
             },
             {
                 "title": "Set up CI/CD pipeline",
                 "description": "Configure GitHub Actions for automated testing",
-                "completed": False
+                "completed": False,
             },
             {
                 "title": "Deploy to production",
                 "description": "Deploy application to cloud hosting platform",
-                "completed": False
+                "completed": False,
             },
             {
                 "title": "Add API documentation",
                 "description": "Enhance OpenAPI documentation with examples",
-                "completed": False
+                "completed": False,
             },
             {
                 "title": "Implement authentication",
                 "description": "Add JWT-based authentication system",
-                "completed": False
+                "completed": False,
             },
         ]
 

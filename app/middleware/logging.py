@@ -1,5 +1,7 @@
 """Request/Response logging middleware."""
+
 import time
+
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
@@ -41,7 +43,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
                 "query_params": dict(request.query_params),
                 "client_host": request.client.host if request.client else None,
                 "user_agent": request.headers.get("user-agent"),
-            }
+            },
         )
 
         # Process request
@@ -57,7 +59,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
                     "path": request.url.path,
                     "error": str(e),
                 },
-                exc_info=True
+                exc_info=True,
             )
             raise
 
@@ -76,7 +78,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
                 "path": request.url.path,
                 "status_code": response.status_code,
                 "process_time": process_time,
-            }
+            },
         )
 
         return response

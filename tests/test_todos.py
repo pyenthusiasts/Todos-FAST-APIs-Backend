@@ -1,5 +1,5 @@
 """Tests for Todo API endpoints."""
-import pytest
+
 from fastapi import status
 
 
@@ -8,11 +8,7 @@ class TestTodoAPI:
 
     def test_create_todo(self, client):
         """Test creating a new todo."""
-        todo_data = {
-            "title": "Test Todo",
-            "description": "This is a test todo",
-            "completed": False
-        }
+        todo_data = {"title": "Test Todo", "description": "This is a test todo", "completed": False}
         response = client.post("/api/v1/todos", json=todo_data)
         assert response.status_code == status.HTTP_201_CREATED
         data = response.json()
@@ -81,8 +77,7 @@ class TestTodoAPI:
         """Test partially updating a todo."""
         # Create a todo
         create_response = client.post(
-            "/api/v1/todos",
-            json={"title": "Original", "description": "Original desc"}
+            "/api/v1/todos", json={"title": "Original", "description": "Original desc"}
         )
         todo_id = create_response.json()["id"]
 

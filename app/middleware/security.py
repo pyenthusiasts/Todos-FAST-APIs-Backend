@@ -1,4 +1,5 @@
 """Security headers middleware."""
+
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
@@ -34,9 +35,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-XSS-Protection"] = "1; mode=block"
 
         # Enforce HTTPS
-        response.headers["Strict-Transport-Security"] = (
-            "max-age=31536000; includeSubDomains"
-        )
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
 
         # Control referrer information
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
@@ -52,8 +51,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         )
 
         # Permissions Policy (formerly Feature Policy)
-        response.headers["Permissions-Policy"] = (
-            "geolocation=(), microphone=(), camera=()"
-        )
+        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
 
         return response

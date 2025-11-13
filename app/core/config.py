@@ -1,6 +1,6 @@
 """Application configuration settings."""
+
 from pydantic_settings import BaseSettings
-from typing import Optional
 
 
 class Settings(BaseSettings):
@@ -33,6 +33,7 @@ class Settings(BaseSettings):
 
     class Config:
         """Pydantic config."""
+
         env_file = ".env"
         case_sensitive = True
 

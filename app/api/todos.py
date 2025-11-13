@@ -1,16 +1,12 @@
 """API routes for Todo operations."""
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.orm import Session
+
 from typing import List
 
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy.orm import Session
+
 from app.db.database import get_db
-from app.schemas.todo import (
-    TodoCreate,
-    TodoUpdate,
-    TodoResponse,
-    TodoList,
-    MessageResponse
-)
+from app.schemas.todo import MessageResponse, TodoCreate, TodoList, TodoResponse, TodoUpdate
 from app.services.todo_service import TodoService
 
 router = APIRouter(prefix="/todos", tags=["todos"])
@@ -20,7 +16,7 @@ router = APIRouter(prefix="/todos", tags=["todos"])
 def get_all_todos(
     skip: int = Query(0, ge=0, description="Number of records to skip"),
     limit: int = Query(100, ge=1, le=100, description="Maximum number of records to return"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """
     Retrieve all todos with pagination.
@@ -40,9 +36,7 @@ def get_all_todos(
 
 @router.get("/completed", response_model=List[TodoResponse], summary="Get completed todos")
 def get_completed_todos(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=100),
-    db: Session = Depends(get_db)
+    skip: int = Query(0, ge=0), limit: int = Query(100, ge=1, le=100), db: Session = Depends(get_db)
 ):
     """
     Retrieve all completed todos.
@@ -60,9 +54,7 @@ def get_completed_todos(
 
 @router.get("/pending", response_model=List[TodoResponse], summary="Get pending todos")
 def get_pending_todos(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=100),
-    db: Session = Depends(get_db)
+    skip: int = Query(0, ge=0), limit: int = Query(100, ge=1, le=100), db: Session = Depends(get_db)
 ):
     """
     Retrieve all pending (incomplete) todos.
@@ -79,10 +71,7 @@ def get_pending_todos(
 
 
 @router.get("/{todo_id}", response_model=TodoResponse, summary="Get todo by ID")
-def get_todo(
-    todo_id: int,
-    db: Session = Depends(get_db)
-):
+def get_todo(todo_id: int, db: Session = Depends(get_db)):
     """
     Retrieve a specific todo by ID.
 
@@ -99,8 +88,7 @@ def get_todo(
     todo = TodoService.get_todo_by_id(db, todo_id)
     if not todo:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Todo with ID {todo_id} not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Todo with ID {todo_id} not found"
         )
     return todo
 
@@ -109,12 +97,9 @@ def get_todo(
     "",
     response_model=TodoResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="Create a new todo"
+    summary="Create a new todo",
 )
-def create_todo(
-    todo: TodoCreate,
-    db: Session = Depends(get_db)
-):
+def create_todo(todo: TodoCreate, db: Session = Depends(get_db)):
     """
     Create a new todo.
 
@@ -129,11 +114,7 @@ def create_todo(
 
 
 @router.put("/{todo_id}", response_model=TodoResponse, summary="Update a todo")
-def update_todo(
-    todo_id: int,
-    todo_update: TodoUpdate,
-    db: Session = Depends(get_db)
-):
+def update_todo(todo_id: int, todo_update: TodoUpdate, db: Session = Depends(get_db)):
     """
     Update an existing todo.
 
@@ -151,17 +132,13 @@ def update_todo(
     updated_todo = TodoService.update_todo(db, todo_id, todo_update)
     if not updated_todo:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Todo with ID {todo_id} not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Todo with ID {todo_id} not found"
         )
     return updated_todo
 
 
 @router.delete("/{todo_id}", response_model=MessageResponse, summary="Delete a todo")
-def delete_todo(
-    todo_id: int,
-    db: Session = Depends(get_db)
-):
+def delete_todo(todo_id: int, db: Session = Depends(get_db)):
     """
     Delete a todo by ID.
 
@@ -178,7 +155,6 @@ def delete_todo(
     deleted = TodoService.delete_todo(db, todo_id)
     if not deleted:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Todo with ID {todo_id} not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Todo with ID {todo_id} not found"
         )
     return MessageResponse(message="Todo deleted successfully")

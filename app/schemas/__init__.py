@@ -1,18 +1,12 @@
 """Schemas package."""
+
 from app.schemas.todo import (
+    MessageResponse,
     TodoBase,
     TodoCreate,
-    TodoUpdate,
-    TodoResponse,
     TodoList,
-    MessageResponse
+    TodoResponse,
+    TodoUpdate,
 )
 
-__all__ = [
-    "TodoBase",
-    "TodoCreate",
-    "TodoUpdate",
-    "TodoResponse",
-    "TodoList",
-    "MessageResponse"
-]
+__all__ = ["TodoBase", "TodoCreate", "TodoUpdate", "TodoResponse", "TodoList", "MessageResponse"]

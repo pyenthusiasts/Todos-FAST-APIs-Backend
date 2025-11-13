@@ -6,9 +6,9 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from app.db.database import init_db, engine
-from app.models import Todo
 from app.core.logging import logger
+from app.db.database import engine, init_db
+from app.models import Todo
 
 
 def main():
@@ -24,6 +24,7 @@ def main():
 
         # Print created tables
         from sqlalchemy import inspect
+
         inspector = inspect(engine)
         tables = inspector.get_table_names()
 
