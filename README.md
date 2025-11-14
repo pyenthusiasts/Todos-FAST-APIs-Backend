@@ -1,196 +1,448 @@
 # Todo Application Backend with FastAPI
 
-This project demonstrates a simple, demo backend REST API for a **Todo Application** built using **FastAPI**, a modern and fast web framework for building APIs with Python. The API supports basic CRUD operations (Create, Read, Update, Delete) to manage a list of todo items.
+A production-ready, scalable REST API for managing todo items built with FastAPI, featuring a clean architecture, comprehensive testing, Docker support, and CI/CD integration.
+
+[![CI/CD Pipeline](https://github.com/pyenthusiasts/Todos-FAST-APIs-Backend/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/pyenthusiasts/Todos-FAST-APIs-Backend/actions)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109.0-009688.svg?style=flat&logo=FastAPI&logoColor=white)](https://fastapi.tiangolo.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Table of Contents
 
-1. [Introduction](#introduction)
-2. [Features](#features)
-3. [Installation](#installation)
-4. [Usage](#usage)
-5. [API Endpoints](#api-endpoints)
-6. [Examples](#examples)
-7. [Contributing](#contributing)
-8. [License](#license)
-
-## Introduction
-
-This Todo Application provides a RESTful API that allows users to manage their todo items. The API is built using **FastAPI**, which provides high performance, automatic data validation, and interactive API documentation. It includes endpoints to create, retrieve, update, and delete todo items.
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Quick Start](#quick-start)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Running the Application](#running-the-application)
+- [Docker Deployment](#docker-deployment)
+- [API Documentation](#api-documentation)
+- [API Endpoints](#api-endpoints)
+- [Testing](#testing)
+- [Development](#development)
+- [CI/CD](#cicd)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Features
 
-- **FastAPI Framework**: Built using FastAPI, which provides asynchronous support and high performance.
-- **CRUD Operations**: Create, Read, Update, and Delete operations for managing todo items.
-- **Automatic API Documentation**: Interactive API documentation generated with **Swagger UI** and **ReDoc**.
-- **Pydantic Models**: Data validation and serialization using Pydantic models.
-- **Error Handling**: Custom error messages for different HTTP status codes.
+- **Modern FastAPI Framework**: High-performance async API framework with automatic OpenAPI documentation
+- **Clean Architecture**: Well-organized code structure with separation of concerns (models, schemas, services, routes)
+- **Database Integration**: SQLAlchemy ORM with SQLite (easily configurable for PostgreSQL)
+- **API Versioning**: Built-in API versioning support (`/api/v1/`)
+- **Comprehensive Testing**: Full test suite with pytest, including unit and integration tests
+- **Docker Support**: Complete Docker and Docker Compose configuration for easy deployment
+- **CI/CD Pipeline**: GitHub Actions workflow for automated testing and deployment
+- **Code Quality**: Pre-commit hooks with Black, isort, flake8, and mypy
+- **Logging**: Structured JSON logging for production environments
+- **Configuration Management**: Environment-based configuration using Pydantic settings
+- **CORS Support**: Configurable CORS middleware for cross-origin requests
+- **Health Checks**: Built-in health check endpoint for monitoring
+- **Pagination**: Support for paginated results on list endpoints
+- **Filtering**: Filter todos by status (completed/pending)
+
+## Project Structure
+
+```
+Todos-FAST-APIs-Backend/
+├── app/
+│   ├── api/
+│   │   ├── __init__.py
+│   │   └── todos.py           # Todo endpoints
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── config.py          # Configuration settings
+│   │   └── logging.py         # Logging configuration
+│   ├── db/
+│   │   ├── __init__.py
+│   │   └── database.py        # Database connection
+│   ├── models/
+│   │   ├── __init__.py
+│   │   └── todo.py            # SQLAlchemy models
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   └── todo.py            # Pydantic schemas
+│   ├── services/
+│   │   ├── __init__.py
+│   │   └── todo_service.py    # Business logic
+│   ├── __init__.py
+│   └── main.py                # Application entry point
+├── tests/
+│   ├── __init__.py
+│   ├── conftest.py            # Test fixtures
+│   ├── test_main.py           # Main app tests
+│   └── test_todos.py          # Todo endpoint tests
+├── .github/
+│   └── workflows/
+│       └── ci.yml             # GitHub Actions CI/CD
+├── .dockerignore
+├── .env.example               # Environment variables template
+├── .gitignore
+├── .pre-commit-config.yaml    # Pre-commit hooks configuration
+├── docker-compose.yml         # Docker Compose configuration
+├── Dockerfile                 # Docker image definition
+├── LICENSE
+├── pyproject.toml             # Python project configuration
+├── README.md
+└── requirements.txt           # Python dependencies
+```
+
+## Quick Start
+
+### Using Docker (Recommended)
+
+```bash
+# Clone the repository
+git clone https://github.com/pyenthusiasts/Todos-FAST-APIs-Backend.git
+cd Todos-FAST-APIs-Backend
+
+# Run with Docker Compose
+docker-compose up --build
+
+# API will be available at http://localhost:8000
+```
+
+### Manual Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/pyenthusiasts/Todos-FAST-APIs-Backend.git
+cd Todos-FAST-APIs-Backend
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the application
+python -m uvicorn app.main:app --reload
+
+# API will be available at http://localhost:8000
+```
 
 ## Installation
 
 ### Prerequisites
 
-- Python 3.7 or higher
+- Python 3.9 or higher
+- pip (Python package manager)
+- Docker and Docker Compose (optional, for containerized deployment)
+- Git
 
-### Install Required Packages
+### Development Setup
 
-1. **Clone the Repository**:
-
-   Clone the repository to your local machine:
-
+1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/todo-app-fastapi.git
+   git clone https://github.com/pyenthusiasts/Todos-FAST-APIs-Backend.git
+   cd Todos-FAST-APIs-Backend
    ```
 
-2. **Navigate to the Directory**:
-
-   Go to the project directory:
-
+2. **Create and activate a virtual environment**:
    ```bash
-   cd todo-app-fastapi
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
-3. **Install Dependencies**:
-
-   Install FastAPI and Uvicorn using pip:
-
+3. **Install dependencies**:
    ```bash
-   pip install fastapi uvicorn
+   pip install -r requirements.txt
    ```
 
-## Usage
-
-1. **Run the Application**:
-
-   Start the FastAPI application using Uvicorn:
-
+4. **Set up environment variables**:
    ```bash
-   uvicorn main:app --reload
+   cp .env.example .env
+   # Edit .env file with your configuration
    ```
 
-   The server will start at `http://127.0.0.1:8000/`.
+5. **Install pre-commit hooks** (optional but recommended):
+   ```bash
+   pip install pre-commit
+   pre-commit install
+   ```
 
-2. **Access API Documentation**:
+## Configuration
 
-   FastAPI provides interactive API documentation at:
+Configuration is managed through environment variables. Copy `.env.example` to `.env` and customize as needed:
 
-   - **Swagger UI**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-   - **ReDoc**: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+```bash
+# API Configuration
+API_V1_PREFIX=/api/v1
+PROJECT_NAME=Todo API
+VERSION=1.0.0
+
+# Database Configuration
+DATABASE_URL=sqlite:///./todos.db
+# For PostgreSQL: postgresql://user:password@localhost/dbname
+
+# Security
+SECRET_KEY=your-secret-key-here
+ALGORITHM=HS256
+
+# Server Configuration
+HOST=0.0.0.0
+PORT=8000
+DEBUG=True
+
+# Logging
+LOG_LEVEL=INFO
+```
+
+### Database Configuration
+
+**SQLite (Default)**:
+```
+DATABASE_URL=sqlite:///./todos.db
+```
+
+**PostgreSQL**:
+```
+DATABASE_URL=postgresql://username:password@localhost:5432/tododb
+```
+
+## Running the Application
+
+### Development Mode
+
+```bash
+# Using uvicorn directly
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+# Or using the main.py script
+python -m app.main
+```
+
+### Production Mode
+
+```bash
+# Using uvicorn with workers
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+```
+
+## Docker Deployment
+
+### Build and Run with Docker
+
+```bash
+# Build the Docker image
+docker build -t todo-api .
+
+# Run the container
+docker run -p 8000:8000 todo-api
+```
+
+### Using Docker Compose
+
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+
+# Rebuild and restart
+docker-compose up --build
+```
+
+## API Documentation
+
+Once the application is running, you can access the interactive API documentation:
+
+- **Swagger UI**: http://localhost:8000/api/v1/docs
+- **ReDoc**: http://localhost:8000/api/v1/redoc
+- **OpenAPI JSON**: http://localhost:8000/api/v1/openapi.json
 
 ## API Endpoints
 
-The following endpoints are available:
+### Root Endpoints
 
-### 1. Get All Todos
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Root endpoint with API information |
+| GET | `/health` | Health check endpoint |
 
-- **Endpoint**: `GET /todos`
-- **Description**: Retrieve all todo items.
-- **Response**: A list of all todo items.
+### Todo Endpoints
 
-### 2. Get Todo by ID
+All todo endpoints are prefixed with `/api/v1/todos`
 
-- **Endpoint**: `GET /todos/{todo_id}`
-- **Description**: Retrieve a specific todo item by its ID.
-- **Response**: The todo item with the specified ID.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/todos` | Get all todos (with pagination) |
+| GET | `/api/v1/todos/completed` | Get all completed todos |
+| GET | `/api/v1/todos/pending` | Get all pending todos |
+| GET | `/api/v1/todos/{todo_id}` | Get a specific todo by ID |
+| POST | `/api/v1/todos` | Create a new todo |
+| PUT | `/api/v1/todos/{todo_id}` | Update a todo |
+| DELETE | `/api/v1/todos/{todo_id}` | Delete a todo |
 
-### 3. Create a New Todo
+### Request Examples
 
-- **Endpoint**: `POST /todos`
-- **Description**: Create a new todo item.
-- **Request Body**:
-  ```json
-  {
-    "id": 1,
+**Create a Todo**:
+```bash
+curl -X POST "http://localhost:8000/api/v1/todos" \
+  -H "Content-Type: application/json" \
+  -d '{
     "title": "Buy groceries",
-    "description": "Milk, Bread, Cheese, Eggs",
+    "description": "Milk, Bread, Eggs",
     "completed": false
-  }
-  ```
-- **Response**: The newly created todo item.
+  }'
+```
 
-### 4. Update an Existing Todo
+**Get All Todos with Pagination**:
+```bash
+curl -X GET "http://localhost:8000/api/v1/todos?skip=0&limit=10"
+```
 
-- **Endpoint**: `PUT /todos/{todo_id}`
-- **Description**: Update an existing todo item by its ID.
-- **Request Body**:
-  ```json
-  {
-    "id": 1,
-    "title": "Buy groceries and fruits",
-    "description": "Milk, Bread, Cheese, Eggs, Apples",
-    "completed": false
-  }
-  ```
-- **Response**: The updated todo item.
+**Update a Todo**:
+```bash
+curl -X PUT "http://localhost:8000/api/v1/todos/1" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "completed": true
+  }'
+```
 
-### 5. Delete a Todo
+**Delete a Todo**:
+```bash
+curl -X DELETE "http://localhost:8000/api/v1/todos/1"
+```
 
-- **Endpoint**: `DELETE /todos/{todo_id}`
-- **Description**: Delete a specific todo item by its ID.
-- **Response**: A confirmation message.
+## Testing
 
-## Examples
+### Run All Tests
 
-### Using cURL
+```bash
+# Run all tests with coverage
+pytest
 
-1. **Create a Todo**:
+# Run with verbose output
+pytest -v
 
-   ```bash
-   curl -X POST -H "Content-Type: application/json" -d '{"id": 1, "title": "Buy groceries", "description": "Milk, Bread, Cheese, Eggs", "completed": false}' http://127.0.0.1:8000/todos
-   ```
+# Run with coverage report
+pytest --cov=app --cov-report=html
 
-2. **Get All Todos**:
+# Run specific test file
+pytest tests/test_todos.py
 
-   ```bash
-   curl -X GET http://127.0.0.1:8000/todos
-   ```
+# Run specific test
+pytest tests/test_todos.py::TestTodoAPI::test_create_todo
+```
 
-3. **Get Todo by ID**:
+### Test Coverage
 
-   ```bash
-   curl -X GET http://127.0.0.1:8000/todos/1
-   ```
+View the coverage report:
+```bash
+pytest --cov=app --cov-report=html
+open htmlcov/index.html  # On macOS
+```
 
-4. **Update a Todo**:
+## Development
 
-   ```bash
-   curl -X PUT -H "Content-Type: application/json" -d '{"id": 1, "title": "Buy groceries and fruits", "description": "Milk, Bread, Cheese, Eggs, Apples", "completed": false}' http://127.0.0.1:8000/todos/1
-   ```
+### Code Quality Tools
 
-5. **Delete a Todo**:
+The project uses several tools to maintain code quality:
 
-   ```bash
-   curl -X DELETE http://127.0.0.1:8000/todos/1
-   ```
+- **Black**: Code formatting
+- **isort**: Import sorting
+- **flake8**: Linting
+- **mypy**: Type checking
+
+Run all checks:
+```bash
+# Format code
+black app/ tests/
+
+# Sort imports
+isort app/ tests/
+
+# Lint code
+flake8 app/ tests/ --max-line-length=100
+
+# Type check
+mypy app/
+```
+
+### Pre-commit Hooks
+
+Pre-commit hooks automatically run code quality checks before each commit:
+
+```bash
+# Install hooks
+pre-commit install
+
+# Run manually on all files
+pre-commit run --all-files
+```
+
+### Database Migrations
+
+For database schema changes, you can use Alembic:
+
+```bash
+# Initialize Alembic (first time only)
+alembic init alembic
+
+# Create a migration
+alembic revision --autogenerate -m "Add new column"
+
+# Apply migrations
+alembic upgrade head
+
+# Rollback migration
+alembic downgrade -1
+```
+
+## CI/CD
+
+The project includes a GitHub Actions workflow that automatically:
+
+1. Runs tests on multiple Python versions (3.9, 3.10, 3.11)
+2. Checks code quality (Black, isort, flake8, mypy)
+3. Builds Docker image
+4. Generates test coverage reports
+5. Tests the Docker container
+
+The workflow runs on:
+- Push to `main`, `develop`, or `claude/*` branches
+- Pull requests to `main` or `develop` branches
 
 ## Contributing
 
-Contributions are welcome! If you have ideas for new features, improvements, or bug fixes, please feel free to open an issue or create a pull request.
+Contributions are welcome! Please follow these steps:
 
-### Steps to Contribute
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Make your changes**
+4. **Run tests**: `pytest`
+5. **Run code quality checks**: `pre-commit run --all-files`
+6. **Commit your changes**: `git commit -m 'Add amazing feature'`
+7. **Push to the branch**: `git push origin feature/amazing-feature`
+8. **Open a Pull Request**
 
-1. **Fork the Repository**: Click the 'Fork' button at the top right of this page.
-2. **Clone Your Fork**: Clone your forked repository to your local machine.
-   ```bash
-   git clone https://github.com/your-username/todo-app-fastapi.git
-   ```
-3. **Create a Branch**: Create a new branch for your feature or bug fix.
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-4. **Make Changes**: Make your changes and commit them with a descriptive message.
-   ```bash
-   git commit -m "Add: feature description"
-   ```
-5. **Push Changes**: Push your changes to your forked repository.
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-6. **Create a Pull Request**: Go to the original repository on GitHub and create a pull request.
+### Development Guidelines
+
+- Write tests for new features
+- Maintain test coverage above 80%
+- Follow PEP 8 style guidelines
+- Use type hints where appropriate
+- Update documentation for API changes
+- Keep commits atomic and well-described
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Acknowledgments
+
+- [FastAPI](https://fastapi.tiangolo.com/) - Modern web framework for building APIs
+- [SQLAlchemy](https://www.sqlalchemy.org/) - SQL toolkit and ORM
+- [Pydantic](https://pydantic-docs.helpmanual.io/) - Data validation using Python type hints
+- [Uvicorn](https://www.uvicorn.org/) - Lightning-fast ASGI server
+
 ---
 
-Thank you for using the Todo Application Backend with FastAPI! If you have any questions or feedback, feel free to reach out. Happy coding! 📝🚀
+**Happy Coding!** If you have any questions or feedback, please open an issue or reach out to the maintainers.
